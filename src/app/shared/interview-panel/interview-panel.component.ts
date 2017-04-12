@@ -7,6 +7,8 @@ import {
 } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 
+import { MdDialog } from '@angular/material';
+
 import { parse } from 'toml';
 import { Converter } from "showdown/dist/showdown";
 
@@ -20,13 +22,14 @@ declare var showdown: any;
     <ace-editor 
     [autoUpdateContent]="true"
     (textChanged)="parseTOML($event);"
-    #editor style="height:150px;"
+    #editor style="height:250px;"
     ></ace-editor>
 
     <div *ngFor="let quest of data?.problem; let idx = index;">
       <b>Ques {{idx + 1}}.</b><markdown>
         <div [innerHTML]="sanitizer.bypassSecurityTrustHtml(converter.makeHtml(quest?.question))"
         ></div>
+        <label>Time limit:</label> {{quest?.time_limit}}
       </markdown>
     </div>
   `
@@ -39,7 +42,10 @@ export class InterviewPanelComponent {
   @ViewChild('editor') editor;
   text: string = "";
 
-  constructor(public sanitizer: DomSanitizer) { }
+  constructor(
+    public sanitizer: DomSanitizer,
+    private dialog: MdDialog
+  ) { }
 
   ngAfterViewInit() {
 
@@ -63,7 +69,7 @@ export class InterviewPanelComponent {
       this.data = <IInterviewPanel.InterviewTest>(parse(term));
 
     } catch (error) {
-      console.log(error);
+      //alert('Not a valid format!')
     }
   }
 }
